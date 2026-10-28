@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { flower, seed } from '../lib/doodles';
+import { url } from '../lib/url';
+seed(404);
+const lost = flower('starfish', 46, 2);
+---
+
+<BaseLayout title="Page not found">
+  <section class="lost">
+    <svg class="pencil" viewBox="-60 -60 120 120" aria-hidden="true" set:html={lost} />
+    <h1>This page fell out of the notebook</h1>
+    <p>It might have moved, or it never existed. Let's get you back to the flowers.</p>
+    <div class="ctas">
+      <a class="btn" href={url()}>Back home</a>
+      <a class="btn alt" href={url('blog')}>Read the blog</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .lost { display: grid; justify-items: start; gap: 14px; padding-block: 48px 20px; max-width: 640px; }
+  svg { width: 140px; height: 140px; overflow: visible; transform: rotate(-12deg); }
+  h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(38px, 6vw, 60px); line-height: 1.05; margin: 0; }
+  p { font-size: 19px; margin: 0; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; }
+</style>

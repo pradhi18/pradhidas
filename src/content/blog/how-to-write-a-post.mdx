@@ -1,0 +1,67 @@
+---
+title: How to write a post (a cheat sheet)
+description: Everything a post can do on this site, in one place. Copy from here when writing a new one.
+date: 2026-10-27
+tags: [tech, guide]
+draft: true
+---
+
+import dahlia from '../../assets/notebook/dahlia-pebbles.jpg';
+
+This post is a **draft**, so it only shows up locally. Keep it as a cheat sheet.
+
+## Making a new post
+
+1. Add a file to `src/content/blog/`, e.g. `my-new-post.md`. The file name becomes the URL: `/blog/my-new-post`.
+2. Copy the front matter (the block between the `---` lines) from this file and change it.
+3. Write in Markdown below it. Use `.mdx` instead of `.md` if you want the extras below (notes and captioned photos).
+4. Commit and push. The site rebuilds itself on GitHub in about a minute.
+
+## Text
+
+Normal paragraphs, **bold**, *italic*, [links](https://github.com/pradhi18) and `inline code` all work.
+
+> A quote turns into a handwritten note.
+
+---
+
+## Code
+
+```ts
+// code blocks get colours automatically
+export function greet(name: string): string {
+  return `hi, ${name} ✿`;
+}
+```
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/hello")
+def hello():
+    return {"message": "hi from the notebook"}
+```
+
+## Notes (MDX only)
+
+<Note title="Tip">Use a note for anything readers shouldn't miss.</Note>
+
+<Note title="Heads up" tone="warn">The warn tone is for things that can break.</Note>
+
+## Photos
+
+In plain Markdown, an image gets taped onto the page:
+
+![Hole-punch flowers joined by a vine](../../assets/notebook/vine-strip.jpg)
+
+In MDX, `<Photo>` adds a handwritten caption:
+
+<Photo src={dahlia} alt="A dahlia drawn around a punched hole, with pebble patterns" caption="a dahlia that took a whole meeting" tilt={1.4} tape="var(--lilac)" />
+
+Put your own images in a folder next to the post (e.g. `src/content/blog/images/`) and import or link them the same way.
+
+## Cover image
+
+Add `cover: ./images/my-cover.jpg` and `coverAlt: "what's in it"` to the front matter for a big taped photo at the top.

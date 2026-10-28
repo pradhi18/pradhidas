@@ -1,0 +1,31 @@
+---
+import CopyEmail from './CopyEmail';
+import { SITE, SOCIALS } from '../config';
+import { url } from '../lib/url';
+const year = new Date().getFullYear();
+---
+
+<footer class="foot">
+  <div class="say-hi">
+    <p class="hand lead">say hi!</p>
+    <div class="links">
+      <CopyEmail client:visible email={SITE.email} />
+      {SOCIALS.map((s) => (
+        <a class="box small" href={s.href} target="_blank" rel="noopener noreferrer me">{s.label}</a>
+      ))}
+      <a class="box small" href={url('rss.xml')}>RSS</a>
+    </div>
+  </div>
+  <div class="fine">
+    <p>© {year} {SITE.author} · made with a pencil and a hole punch</p>
+    <p>Opinions here are my own.</p>
+  </div>
+</footer>
+
+<style>
+  .foot { display: grid; gap: 22px; padding-block: 56px 10px; }
+  .lead { font-size: 28px; font-weight: 700; margin: 0 0 8px; color: var(--ink); }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .fine { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 24px; font-family: var(--f-hand); font-size: 19px; color: var(--pencil); }
+  .fine p { margin: 0; }
+</style>

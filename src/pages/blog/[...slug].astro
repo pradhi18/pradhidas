@@ -1,0 +1,153 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import Comments from '../../components/Comments.astro';
+import Note from '../../components/mdx/Note.astro';
+import Photo from '../../components/mdx/Photo.astro';
+import { formatDate, getPosts, readingMinutes, relatedPosts, type Post } from '../../lib/posts';
+import { divider, flowerFor } from '../../lib/doodles';
+import { url } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    // posts are newest first, so the next index is the older post
+    props: { post, older: posts[i + 1], newer: posts[i - 1], all: posts },
+  }));
+}
+
+interface Props { post: Post; older?: Post; newer?: Post; all: Post[]; }
+const { post, older, newer, all } = Astro.props;
+const { Content } = await render(post);
+const related = relatedPosts(post, all);
+const d = post.data;
+---
+
+<BaseLayout title={d.title} description={d.description}>
+  <article class="post">
+    <a class="back hand" href={url('blog')}>← all posts</a>
+    <header>
+      {d.tags.length > 0 && (
+        <div class="tags">{d.tags.map((t) => <a class="box small" href={url(`blog/tags/${t}`)}>{t}</a>)}</div>
+      )}
+      <h1>{d.title}</h1>
+      <p class="meta">
+        <time datetime={d.date.toISOString()}>{formatDate(d.date)}</time>
+        <span>{readingMinutes(post)} min read</span>
+        {d.updated && <span>updated {formatDate(d.updated)}</span>}
+        {d.draft && <span class="draft">draft</span>}
+      </p>
+      <svg class="title-flower pencil" viewBox="-30 -30 60 60" aria-hidden="true" set:html={flowerFor(post.id)} />
+    </header>
+
+    {d.cover && (
+      <figure class="cover taped">
+        <Image src={d.cover} alt={d.coverAlt ?? ''} widths={[600, 900, 1400]} sizes="(max-width: 900px) 100vw, 860px" loading="eager" />
+      </figure>
+    )}
+
+    <div class="prose">
+      <Content components={{ Note, Photo }} />
+    </div>
+
+    <svg class="end pencil" viewBox="0 0 190 26" aria-hidden="true" set:html={divider('beads', 4)} />
+
+    {(older || newer) && (
+      <nav class="pager" aria-label="More posts">
+        {older ? (
+          <a class="pager-link" href={url(`blog/${older.id}`)}>
+            <svg viewBox="-30 -30 60 60" class="pencil" aria-hidden="true" set:html={flowerFor(older.id)} />
+            <span><span class="hand">← older</span>{older.data.title}</span>
+          </a>
+        ) : <span />}
+        {newer && (
+          <a class="pager-link right" href={url(`blog/${newer.id}`)}>
+            <span><span class="hand">newer →</span>{newer.data.title}</span>
+            <svg viewBox="-30 -30 60 60" class="pencil" aria-hidden="true" set:html={flowerFor(newer.id)} />
+          </a>
+        )}
+      </nav>
+    )}
+
+    {related.length > 0 && (
+      <section class="related" aria-labelledby="related-h">
+        <h2 id="related-h">More from the notebook</h2>
+        <div class="related-list">{related.map((p) => <PostCard post={p} />)}</div>
+        <a class="box" href={url('blog/archive')}>browse the archive →</a>
+      </section>
+    )}
+
+    <Comments />
+  </article>
+</BaseLayout>
+
+<style>
+  .post { max-width: 760px; padding-top: 20px; }
+  .back { font-size: 21px; color: var(--pencil); text-decoration: none; }
+  .back:hover { color: var(--tangerine-ink); }
+  header { position: relative; margin: 18px 0 30px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(38px, 6vw, 64px); line-height: 1.04; margin: 0; padding-right: 64px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--pencil); font-size: 15px; margin: 12px 0 0; font-variant-numeric: tabular-nums; }
+  .draft { font-family: var(--f-hand); font-size: 17px; color: var(--tangerine-ink); border: 1.4px dashed var(--tangerine-ink); border-radius: 6px; padding: 0 6px; }
+  .title-flower { position: absolute; right: 0; top: 40px; width: 58px; height: 58px; overflow: visible; }
+  .cover { margin: 0 0 36px; padding: 12px; transform: rotate(-.8deg); }
+  .cover :global(img) { display: block; width: 100%; height: auto; }
+
+  .end { display: block; width: 190px; height: 26px; margin: 48px auto 36px; overflow: visible; }
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .pager-link { display: flex; align-items: center; gap: 12px; padding: 14px 16px; text-decoration: none; color: var(--ink); border: 1.6px solid var(--pencil); border-radius: var(--sketch); background: var(--card); font-weight: 600; line-height: 1.3; transition: transform .25s; }
+  .pager-link:hover { transform: translateY(-3px) rotate(-.6deg); }
+  .pager-link.right { justify-content: flex-end; text-align: right; grid-column: 2; }
+  .pager-link svg { width: 44px; height: 44px; flex: none; overflow: visible; }
+  .pager-link .hand { display: block; font-weight: 400; font-size: 19px; color: var(--tangerine-ink); }
+  .related { margin-top: 64px; display: grid; gap: 26px; justify-items: start; }
+  .related h2 { font-family: var(--f-display); font-weight: 400; font-size: 34px; margin: 0; }
+  .related-list { display: grid; gap: 28px; }
+  @media (max-width: 640px) {
+    .pager { grid-template-columns: 1fr; }
+    .pager-link.right { grid-column: 1; }
+    .title-flower { display: none; }
+    h1 { padding-right: 0; }
+  }
+
+  /* ---------- post body */
+  .prose { font-size: 18px; line-height: 1.75; }
+  .prose :global(> * + *) { margin-top: 1.1em; }
+  .prose :global(p), .prose :global(ul), .prose :global(ol) { margin-bottom: 0; }
+  .prose :global(h2), .prose :global(h3) { font-family: var(--f-display); font-weight: 400; line-height: 1.15; margin: 1.8em 0 .5em; position: relative; }
+  .prose :global(h2) { font-size: 32px; }
+  .prose :global(h3) { font-size: 25px; }
+  .prose :global(h2)::before {
+    content: ""; position: absolute; left: -38px; top: .2em; width: 24px; height: 24px; background: var(--tangerine);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.5l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 8.7l7.1-.6z'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.5l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 8.7l7.1-.6z'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  .prose :global(a) { color: var(--tangerine-ink); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  .prose :global(strong) { font-weight: 700; }
+  .prose :global(ul) { padding-left: 1.3em; }
+  .prose :global(li::marker) { color: var(--tangerine); }
+  .prose :global(blockquote) {
+    margin: 1.6em 0; padding: 4px 0 4px 20px; border-left: 3px solid var(--lilac);
+    font-family: var(--f-hand); font-size: 24px; line-height: 1.4; color: var(--ink);
+  }
+  .prose :global(hr) { border: 0; height: 26px; margin: 2.4em auto; width: 190px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 190 26'%3E%3Cpath d='M4 13c10-12 20 12 30 0s20 12 30 0 20 12 30 0 20 12 30 0 20 12 30 0 20 12 30 0' fill='none' stroke='%236E6578' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat; }
+  .prose :global(:not(pre) > code) { font-family: var(--f-mono); font-size: .88em; background: color-mix(in srgb, var(--lilac) 22%, transparent); padding: .1em .35em; border-radius: 5px; }
+  .prose :global(pre) {
+    font-family: var(--f-mono); font-size: 14.5px; line-height: 1.6; padding: 18px 20px; overflow-x: auto;
+    background: var(--code-bg) !important; border: 1.6px solid var(--pencil); border-radius: 6px 14px 5px 12px;
+    box-shadow: 4px 5px 0 color-mix(in srgb, var(--sky) 45%, transparent);
+  }
+  .prose :global(pre code) { background: none; padding: 0; }
+  /* images in plain Markdown get taped onto the page */
+  .prose :global(p:has(> img)) { position: relative; background: var(--card); padding: 12px; margin: 2em auto; width: fit-content; max-width: min(720px, 100%); transform: rotate(-.8deg); box-shadow: 0 12px 26px -14px var(--shadow), 0 1px 2px var(--shadow); }
+  .prose :global(p:has(> img))::before { content: ""; position: absolute; top: -13px; left: 50%; width: 96px; height: 26px; transform: translateX(-50%) rotate(-4deg); background: color-mix(in srgb, var(--peach) 60%, transparent); }
+  .prose :global(p > img) { display: block; width: auto; max-width: 100%; max-height: min(78vh, 760px); }
+  .prose :global(table) { width: 100%; border-collapse: collapse; font-size: 16px; display: block; overflow-x: auto; }
+  .prose :global(th), .prose :global(td) { border-bottom: 1.4px solid var(--rule); padding: 8px 10px; text-align: left; }
+  @media (max-width: 640px) { .prose :global(h2)::before { display: none; } }
+</style>

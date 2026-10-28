@@ -1,0 +1,36 @@
+---
+// Giscus comments, stored in this repo's GitHub Discussions. Set the ids in src/config.ts.
+import { GISCUS } from '../config';
+const ready = Boolean(GISCUS.repoId && GISCUS.categoryId);
+---
+
+<section class="comments" aria-labelledby="comments-h">
+  <h2 id="comments-h" class="hand">leave a note</h2>
+  {ready ? (
+    <script
+      is:inline
+      src="https://giscus.app/client.js"
+      data-repo={GISCUS.repo}
+      data-repo-id={GISCUS.repoId}
+      data-category={GISCUS.category}
+      data-category-id={GISCUS.categoryId}
+      data-mapping="pathname"
+      data-strict="0"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="preferred_color_scheme"
+      data-lang="en"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      async
+    ></script>
+  ) : (
+    <p class="note">Comments are coming soon.</p>
+  )}
+</section>
+
+<style>
+  .comments { margin-top: 64px; }
+  h2 { font-size: 30px; margin: 0 0 14px; }
+</style>

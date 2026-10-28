@@ -1,0 +1,29 @@
+---
+// A boxed note with a flower stuck on its corner. Use it in .mdx posts:
+// <Note>Remember to restart the dev server after changing config.</Note>
+// <Note title="Heads up" tone="warn">This deletes the folder.</Note>
+import { flower, hashSeed, seed } from '../../lib/doodles';
+
+interface Props { title?: string; tone?: 'tip' | 'warn'; }
+const { title, tone = 'tip' } = Astro.props;
+seed(hashSeed(title ?? tone));
+const corner = flower(tone === 'warn' ? 'starhole' : 'lotus', 17, tone === 'warn' ? 0 : 2);
+---
+
+<aside class:list={['note-card', tone]}>
+  <svg class="corner pencil" viewBox="-22 -22 44 44" aria-hidden="true" set:html={corner} />
+  {title && <p class="title">{title}</p>}
+  <slot />
+</aside>
+
+<style>
+  .note-card {
+    position: relative; margin: 28px 0; padding: 16px 22px 14px;
+    background: var(--card); border: 1.6px solid var(--pencil);
+    border-radius: 4px 12px 3px 14px;
+  }
+  .note-card.warn { background: color-mix(in srgb, var(--peach) 22%, var(--card)); }
+  .corner { position: absolute; right: -18px; top: -20px; width: 44px; height: 44px; overflow: visible; }
+  .title { font-family: var(--f-hand); font-weight: 700; font-size: 22px; margin: 0 0 4px; }
+  .note-card :global(p:last-child) { margin-bottom: 0; }
+</style>

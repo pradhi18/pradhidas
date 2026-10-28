@@ -1,0 +1,131 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHead from '../components/SectionHead.astro';
+import CopyEmail from '../components/CopyEmail';
+import { CV, SITE, SOCIALS } from '../config';
+import { divider, flower, seed, stars } from '../lib/doodles';
+import { url } from '../lib/url';
+import portrait from '../assets/about/portrait-sunset.jpg';
+import foret from '../assets/about/foret-wall.jpg';
+import vine from '../assets/notebook/vine-strip.jpg';
+import dahlia from '../assets/notebook/dahlia-pebbles.jpg';
+import mindmap from '../assets/notebook/mindmap-column.jpg';
+
+const pencilCase = [
+  { group: 'Frontend', items: ['JavaScript', 'TypeScript', 'React', 'HTML/CSS'] },
+  { group: 'Backend', items: ['Python', 'FastAPI', 'Java', 'Spring Boot'] },
+  { group: 'Cloud', items: ['AWS'] },
+  { group: 'AI', items: ['Agentic AI', 'MCP servers', 'Amazon Bedrock', 'LLM integration'] },
+  { group: 'Quality & delivery', items: ['Automation testing', 'CI/CD'] },
+];
+seed(44);
+const cornerFlower = flower('dahlia', 20, 1, 4);
+---
+
+<BaseLayout title="About" description="Pradhi Das: software engineer at JPMorganChase, and the doodler behind the hole-punch flowers.">
+  <section class="intro">
+    <figure class="portrait taped" style="--tape: var(--peach)">
+      <Image src={portrait} width={800} alt="Pradhi smiling at golden hour, with a bay and hills behind her" widths={[360, 560, 800]} sizes="(max-width: 760px) 80vw, 360px" loading="eager" />
+      <figcaption>golden hour, my favourite</figcaption>
+      <svg class="photo-flower pencil" viewBox="-24 -24 48 48" aria-hidden="true" set:html={cornerFlower} />
+    </figure>
+
+    <div class="story">
+      <p class="hi">hi, i'm</p>
+      <h1>Pradhi<svg class="title-stars pencil" viewBox="0 0 160 120" aria-hidden="true" set:html={stars(52)} /></h1>
+      <p class="role">{SITE.role} at <b>{SITE.company}</b></p>
+      <p class="headline">I build web apps end to end, from React front ends to FastAPI services, and draw flowers in the margins.</p>
+      <svg class="divider pencil" viewBox="0 0 190 26" aria-hidden="true" set:html={divider('squiggle', 3)} />
+      <p>I'm a software engineer, which mostly means I spend my days figuring out why things work, or why they don't.</p>
+      <p>My notebook is where both halves of me live. One side of the page has meeting notes, arrows and question marks. The other side has flowers. At some point I started drawing a flower around every punched hole and joining them up with vines, and I haven't stopped since.</p>
+      <p>This site is that notebook, opened up. You'll find what I'm building, what I'm learning, and whatever else I can't stop thinking about. When I'm not at my desk, I'm probably dancing, planning a new post, or deciding what to eat.</p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="case-h">
+    <SectionHead title="What's in my pencil case" id="case-h" divider="beads" />
+    <dl class="pencil-case">
+      {pencilCase.map(({ group, items }) => (
+        <div class="row">
+          <dt class="hand">{group}</dt>
+          <dd>{items.map((i) => <span class="box small">{i}</span>)}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <section class="block" aria-labelledby="nb-h">
+    <SectionHead title="Straight from the notebook" id="nb-h" divider="coil">
+      <p class="note">the real doodles behind this site</p>
+    </SectionHead>
+    <div class="snippets">
+      <figure class="snip taped" style="--tilt:-2deg; --tape: var(--sky)">
+        <Image src={vine} width={500} alt="A pencil vine of flowers drawn around punched holes, with shaded leaves" widths={[300, 500]} sizes="(max-width: 760px) 45vw, 260px" />
+      </figure>
+      <figure class="snip taped" style="--tilt:1.5deg; --tape: var(--lilac)">
+        <Image src={dahlia} width={500} alt="Two dahlias drawn around punched holes, joined by patches of pebble patterns" widths={[300, 500]} sizes="(max-width: 760px) 45vw, 260px" />
+      </figure>
+      <figure class="snip taped" style="--tilt:-1deg; --tape: var(--peach)">
+        <Image src={mindmap} width={500} alt="A column of doodles: a flower vine, a mind-map blob and zigzag shapes" widths={[300, 500]} sizes="(max-width: 760px) 45vw, 260px" />
+      </figure>
+    </div>
+  </section>
+
+  <section class="block outside" aria-labelledby="out-h">
+    <figure class="foret taped" style="--tape: var(--peach)">
+      <Image src={foret} width={760} alt="Pradhi standing in front of a wall covered in red autumn vines under a sign that says forêt" widths={[320, 520, 760]} sizes="(max-width: 760px) 70vw, 320px" />
+    </figure>
+    <div>
+      <SectionHead title="Outside the notebook" id="out-h" divider="squiggle" />
+      <p>Dancing, recording, planning the next post, and hunting for walls covered in leaves.</p>
+      <div class="actions">
+        {CV.enabled ? <a class="btn" href={url(CV.file)} download>Download my CV</a> : null}
+        <CopyEmail client:visible email={SITE.email} />
+        {SOCIALS.slice(0, 2).map((s) => <a class="box small" href={s.href} target="_blank" rel="noopener noreferrer me">{s.label}</a>)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .intro { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: clamp(28px, 5vw, 64px); align-items: start; padding-top: 36px; }
+  .portrait { margin: 14px 0 0; padding: 12px 12px 8px; transform: rotate(-2.5deg); }
+  .portrait :global(img) { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 55% 40%; }
+  figcaption { font-family: var(--f-hand); font-size: 20px; color: var(--pencil); text-align: center; margin-top: 6px; }
+  .photo-flower { position: absolute; right: -22px; bottom: -20px; width: 52px; height: 52px; overflow: visible; }
+  .hi { display: inline-block; font-family: var(--f-hand); font-size: 26px; color: var(--pencil); transform: rotate(-3deg); margin: 0; }
+  h1 { position: relative; width: fit-content; font-family: var(--f-display); font-weight: 400; font-size: clamp(58px, 8vw, 104px); line-height: .95; margin: 0; color: var(--tangerine); text-shadow: .045em .05em 0 var(--lilac); }
+  .title-stars { position: absolute; left: 102%; top: -10%; width: .9em; overflow: visible; }
+  .role { font-size: 20px; margin: 16px 0 4px; }
+  .headline { font-family: var(--f-hand); font-size: 24px; line-height: 1.35; color: var(--pencil); margin: 0; max-width: 34ch; }
+  .divider { display: block; width: 190px; height: 26px; margin: 18px 0 8px; overflow: visible; }
+  .story p:not(.hi):not(.role):not(.headline) { max-width: 62ch; font-size: 18px; }
+
+  .block { margin-top: clamp(64px, 9vw, 104px); }
+  .pencil-case { margin: 0; display: grid; gap: 14px; }
+  .row { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 8px 16px; align-items: baseline; }
+  dt { font-size: 22px; font-weight: 700; color: var(--tangerine-ink); }
+  dd { margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .row:nth-child(odd) dd .box:nth-child(odd) { transform: rotate(-1.4deg); }
+  .row:nth-child(even) dd .box:nth-child(even) { transform: rotate(1.2deg); }
+
+  .snippets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; align-items: start; }
+  .snip { margin: 0; padding: 10px; transform: rotate(var(--tilt)); transition: transform .35s cubic-bezier(.34, 1.56, .64, 1); }
+  .snip:hover { transform: rotate(0deg) scale(1.02); }
+  .snip :global(img) { display: block; width: 100%; height: 340px; object-fit: cover; object-position: top; }
+
+  .outside { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: clamp(28px, 5vw, 64px); align-items: center; }
+  .foret { margin: 0; padding: 12px; transform: rotate(2deg); }
+  .foret :global(img) { display: block; width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: cover; object-position: 50% 30%; }
+  .outside p { font-size: 18px; max-width: 46ch; margin: -10px 0 20px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+  @media (max-width: 760px) {
+    .intro, .outside { grid-template-columns: 1fr; }
+    .portrait, .foret { max-width: 300px; justify-self: center; }
+    .row { grid-template-columns: 1fr; }
+    .snippets { grid-template-columns: 1fr 1fr; }
+    .snip :global(img) { height: 240px; }
+  }
+</style>

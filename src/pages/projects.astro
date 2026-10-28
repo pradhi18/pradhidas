@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHead from '../components/SectionHead.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { PROJECTS } from '../data/projects';
+import { url } from '../lib/url';
+---
+
+<BaseLayout title="Projects" description="Code, design and writing projects by Pradhi Das.">
+  <div class="page">
+    <SectionHead title="Things I'm making" level={1} divider="beads">
+      <a class="box" href={url('#stickers')}>try the stickers →</a>
+    </SectionHead>
+    <p class="intro">A mix of code, design and writing. Some are still seedlings.</p>
+    <div class="projects">
+      {PROJECTS.map((p) => <ProjectCard {...p} />)}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page { padding-top: 28px; }
+  .intro { font-size: 19px; margin: -14px 0 30px; }
+  .projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 44px 30px; padding-top: 10px; }
+</style>

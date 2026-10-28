@@ -1,0 +1,40 @@
+---
+import { flower, seed } from '../lib/doodles';
+import { url } from '../lib/url';
+
+const links = [
+  { href: 'blog', label: 'blog' },
+  { href: 'projects', label: 'projects' },
+  { href: 'about', label: 'about' },
+];
+const here = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), '').replace(/^\//, '');
+seed(3);
+const logo = flower('star', 17, 0, 4);
+---
+
+<header class="nav">
+  <a class="logo" href={url()} aria-label="Pradhi Das, home">
+    <svg viewBox="-20 -20 40 40" class="pencil" aria-hidden="true" set:html={logo} />
+    <span>pradhi</span>
+  </a>
+  <nav aria-label="Main">
+    <ul>
+      {links.map((l) => (
+        <li>
+          <a class="box" href={url(l.href)} aria-current={here.startsWith(l.href) ? 'page' : undefined}>{l.label}</a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding-block: 6px 10px; }
+  .logo { display: inline-flex; align-items: center; gap: 8px; font-family: var(--f-hand); font-weight: 700; font-size: 30px; color: var(--ink); text-decoration: none; }
+  .logo svg { width: 36px; height: 36px; overflow: visible; transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
+  .logo:hover svg { transform: rotate(40deg) scale(1.1); }
+  ul { display: flex; flex-wrap: wrap; gap: 10px 14px; list-style: none; margin: 0; padding: 0; }
+  li:nth-child(odd) .box { transform: rotate(-1.5deg); }
+  li:nth-child(even) .box { transform: rotate(1.2deg); }
+  .box[aria-current='page'] { background: var(--lilac); color: var(--on-accent); border-color: var(--ink); }
+</style>

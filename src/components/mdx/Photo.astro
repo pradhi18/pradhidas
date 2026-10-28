@@ -1,0 +1,21 @@
+---
+// A photo taped onto the page, with an optional handwritten caption. Use it in .mdx posts:
+// import myPic from './images/my-pic.jpg';
+// <Photo src={myPic} alt="What's in the picture" caption="a note under the photo" />
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props { src: ImageMetadata; alt: string; caption?: string; tilt?: number; tape?: string; }
+const { src, alt, caption, tilt = -1.2, tape = 'var(--sky)' } = Astro.props;
+---
+
+<figure class="photo taped" style={`--tilt:${tilt}deg; --tape:${tape}`}>
+  <Image src={src} alt={alt} widths={[480, 800, 1200]} sizes="(max-width: 800px) 100vw, 720px" />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .photo { margin: 36px auto; padding: 12px 12px 10px; width: fit-content; max-width: min(720px, 100%); transform: rotate(var(--tilt)); }
+  .photo :global(img) { display: block; width: auto; max-width: 100%; height: auto; max-height: min(78vh, 760px); }
+  figcaption { font-family: var(--f-hand); font-size: 20px; color: var(--pencil); text-align: center; margin-top: 8px; }
+</style>

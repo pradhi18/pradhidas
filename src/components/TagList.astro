@@ -1,0 +1,24 @@
+---
+import { url } from '../lib/url';
+
+interface Props { tags: { tag: string; count: number }[]; current?: string; }
+const { tags, current } = Astro.props;
+---
+
+{tags.length > 0 && (
+  <nav class="tag-list" aria-label="Filter by tag">
+    <a class="box small" href={url('blog')} aria-current={!current ? 'page' : undefined}>everything</a>
+    {tags.map(({ tag, count }) => (
+      <a class="box small" href={url(`blog/tags/${tag}`)} aria-current={current === tag ? 'page' : undefined}>
+        {tag} <span class="count">{count}</span>
+      </a>
+    ))}
+  </nav>
+)}
+
+<style>
+  .tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .count { font-family: var(--f-body); font-size: 12px; color: var(--pencil); }
+  [aria-current='page'] { background: var(--lilac); color: var(--on-accent); border-color: var(--ink); }
+  [aria-current='page'] .count { color: var(--on-accent); }
+</style>

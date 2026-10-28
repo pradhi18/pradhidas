@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHead from '../components/SectionHead.astro';
+import PostCard from '../components/PostCard.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import StickerTray from '../components/StickerTray';
+import { NOW } from '../config';
+import { PROJECTS } from '../data/projects';
+import { getPosts } from '../lib/posts';
+import { crowd, flower, nowMap, projectArt, seed, stars } from '../lib/doodles';
+import { url } from '../lib/url';
+
+const posts = (await getPosts()).slice(0, 3);
+seed(12);
+const psstFlower = flower('lotus', 17, 0);
+---
+
+<BaseLayout>
+  <section class="hero">
+    <div class="hero-text">
+      <p class="hi">hi, i'm</p>
+      <h1>
+        <span class="first">
+          <svg class="name-bubble pencil" viewBox="0 0 380 160" aria-hidden="true" set:html={crowd(380, 160, 20, 1, 14)} />
+          Pradhi
+        </span>
+        <span class="last">
+          Das
+          <svg class="name-stars pencil" viewBox="0 0 160 120" aria-hidden="true" set:html={stars()} />
+        </span>
+      </h1>
+      <p class="lede">I'm a software engineer who builds web apps end to end and draws flowers in the margins. This is my notebook: blog posts, projects, and whatever I'm into right now.</p>
+      <div class="ctas">
+        <a class="btn" href={url('blog')}>Read the blog</a>
+        <a class="btn alt" href={url('about')}>About me</a>
+      </div>
+      <p class="psst">
+        <span class="note-box">psst: click anywhere on the paper<svg class="corner-flower pencil" viewBox="-22 -22 44 44" aria-hidden="true" set:html={psstFlower} /></span>
+      </p>
+    </div>
+    <figure class="now">
+      <svg class="pencil" viewBox="0 0 420 360" role="img" aria-label={`Mind-map doodle: ${NOW.join(', ')}`} set:html={nowMap(NOW)} />
+      <figcaption><b>now:</b> what's on my mind-map this month</figcaption>
+    </figure>
+  </section>
+
+  <section class="block" aria-labelledby="blog-h">
+    <SectionHead title="Fresh from the notebook" id="blog-h" divider="coil">
+      <a class="box" href={url('blog')}>all posts →</a>
+    </SectionHead>
+    {posts.length > 0 ? (
+      <div class="posts">
+        {posts.map((p, i) => <PostCard post={p} featured={i === 0} />)}
+      </div>
+    ) : (
+      <div class="empty taped">
+        <svg class="pencil" viewBox="0 0 250 112" aria-hidden="true" set:html={projectArt('sprout', 9)} />
+        <p class="hand">The first post is still a seedling. Check back soon!</p>
+      </div>
+    )}
+  </section>
+
+  <section class="block" aria-labelledby="proj-h">
+    <SectionHead title="Things I'm making" id="proj-h" divider="beads">
+      <a class="box" href={url('projects')}>all projects →</a>
+    </SectionHead>
+    <div class="projects">
+      {PROJECTS.map((p) => <ProjectCard {...p} />)}
+    </div>
+  </section>
+
+  <section class="block" id="stickers" aria-labelledby="stick-h">
+    <SectionHead title="Stick a flower on it" id="stick-h" divider="squiggle">
+      <p class="note">every sticker is one of my notebook doodles</p>
+    </SectionHead>
+    <StickerTray client:visible />
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: center; padding-block: clamp(28px, 5vw, 56px) 20px; }
+  .hero-text { min-width: 0; }
+  .hi { display: inline-block; font-family: var(--f-hand); font-size: 28px; color: var(--pencil); transform: rotate(-3deg); margin: 0 0 18px; }
+  h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(64px, 10.5vw, 146px); line-height: .92; margin: 0; letter-spacing: -.005em; }
+  h1 > span { display: block; width: fit-content; position: relative; isolation: isolate; }
+  .first { color: var(--tangerine); text-shadow: .045em .05em 0 var(--lilac); }
+  .last { color: var(--ink); text-shadow: .045em .05em 0 var(--peach); margin-left: .35em; }
+  /* the flower bubble is sized from the word itself, so it sits in the same spot at every screen size */
+  .name-bubble { position: absolute; left: -12%; top: -24%; width: 90%; height: auto; z-index: -1; overflow: visible; }
+  .name-stars { position: absolute; left: 104%; top: -6%; width: .95em; height: auto; overflow: visible; }
+  .lede { font-size: clamp(18px, 2vw, 21px); max-width: 36ch; margin: 26px 0 26px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .psst { font-family: var(--f-hand); font-size: 20px; color: var(--pencil); margin: 28px 0 0; transform: rotate(-1.5deg); }
+  .note-box { position: relative; display: inline-block; border: 1.5px solid var(--pencil); border-radius: 3px 9px 2px 11px; padding: 3px 26px 3px 14px; background: var(--paper); }
+  .corner-flower { position: absolute; right: -20px; top: -22px; width: 44px; height: 44px; overflow: visible; }
+
+  .now { margin: 0; text-align: center; min-width: 0; }
+  .now svg { width: 100%; max-width: 440px; height: auto; display: block; margin: 0 auto; overflow: visible; }
+  .now figcaption { font-family: var(--f-hand); font-size: 21px; color: var(--pencil); margin-top: 4px; }
+  .now b { color: var(--tangerine-ink); }
+
+  .block { margin-top: clamp(72px, 10vw, 120px); }
+  .posts { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 36px 48px; }
+  .posts > :global(.featured) { grid-row: span 2; align-self: start; }
+  .posts:has(> :only-child) { grid-template-columns: minmax(0, 1fr); max-width: 760px; }
+  .empty { display: grid; justify-items: center; gap: 6px; padding: 28px 20px; max-width: 520px; }
+  .empty svg { width: 220px; height: auto; overflow: visible; }
+  .empty p { font-size: 22px; margin: 0; text-align: center; }
+  .projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 44px 30px; padding-top: 16px; }
+
+  /* sticker tray (React island markup) */
+  :global(.tray) { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+  :global(.tray-item) { width: 64px; height: 64px; padding: 4px; border: 1.6px solid var(--pencil); border-radius: var(--sketch); background: var(--card); cursor: pointer; transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), background .2s; }
+  :global(.tray-item svg) { width: 100%; height: 100%; overflow: visible; }
+  :global(.tray-item:hover) { transform: rotate(-8deg) scale(1.06); }
+  :global(.tray-item[aria-pressed='true']) { background: var(--lilac); border-color: var(--ink); transform: rotate(-4deg) scale(1.08); }
+  :global(.sticker-board) { position: relative; overflow: hidden; background: var(--card); border: 1.8px solid var(--pencil); border-radius: 18px 6px 22px 8px / 8px 22px 6px 18px; cursor: copy; touch-action: none; }
+  :global(.board-binding) { display: block; width: 100%; height: 38px; }
+  :global(.board-hint) { position: absolute; left: 0; right: 0; top: 46%; text-align: center; font-size: 22px; color: var(--pencil); margin: 0; pointer-events: none; padding-inline: 16px; }
+  :global(.placed) { position: absolute; width: 72px; height: 72px; overflow: visible; cursor: grab; touch-action: none; }
+  :global(.placed:active) { cursor: grabbing; }
+  :global(.board-tools) { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
+  :global(.board-tools .box[disabled]) { opacity: .45; cursor: default; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; }
+    .posts { grid-template-columns: 1fr; }
+    .posts > :global(.featured) { grid-row: auto; }
+  }
+</style>

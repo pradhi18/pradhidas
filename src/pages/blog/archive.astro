@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import { formatDate, getPosts, type Post } from '../../lib/posts';
+import { flowerFor } from '../../lib/doodles';
+import { url } from '../../lib/url';
+
+const posts = await getPosts();
+const months = new Map<string, Post[]>();
+for (const p of posts) {
+  const key = p.data.date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  months.set(key, [...(months.get(key) ?? []), p]);
+}
+---
+
+<BaseLayout title="Archive" description="Every post in Pradhi's notebook, month by month.">
+  <div class="page">
+    <SectionHead title="The archive" level={1} divider="beads">
+      <a class="box" href={url('blog')}>← all posts</a>
+    </SectionHead>
+    {posts.length === 0 && <p class="note">Nothing here yet. The first post is on its way.</p>}
+    {[...months].map(([month, list]) => (
+      <section class="month">
+        <h2 class="hand">{month}</h2>
+        <ul>
+          {list.map((p) => (
+            <li>
+              <svg class="pencil" viewBox="-30 -30 60 60" aria-hidden="true" set:html={flowerFor(p.id)} />
+              <a href={url(`blog/${p.id}`)}>{p.data.title}</a>
+              <time datetime={p.data.date.toISOString()}>{formatDate(p.data.date)}</time>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .page { padding-top: 28px; max-width: 760px; }
+  .month + .month { margin-top: 30px; }
+  h2 { font-size: 28px; color: var(--tangerine-ink); margin: 0 0 8px; }
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+  li { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 12px; align-items: center; min-height: 32px; }
+  li svg { width: 26px; height: 26px; overflow: visible; }
+  li a { color: var(--ink); font-weight: 600; text-decoration: none; }
+  li a:hover { color: var(--tangerine-ink); text-decoration: underline; }
+  time { font-size: 14px; color: var(--pencil); font-variant-numeric: tabular-nums; }
+</style>

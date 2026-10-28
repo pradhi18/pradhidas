@@ -1,0 +1,103 @@
+---
+import '@fontsource/bagel-fat-one';
+import '@fontsource/figtree/400.css';
+import '@fontsource/figtree/500.css';
+import '@fontsource/figtree/600.css';
+import '@fontsource/figtree/700.css';
+import '@fontsource/gaegu/400.css';
+import '@fontsource/gaegu/700.css';
+import '../styles/global.css';
+
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MarginVine from '../components/MarginVine';
+import Sprouts from '../components/Sprouts';
+import { SITE } from '../config';
+import { waves } from '../lib/doodles';
+import { url } from '../lib/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description = SITE.description } = Astro.props;
+const pageTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} · ${SITE.role}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE.author} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.title} · blog`} href={url('rss.xml')} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="theme-color" content="#FFFBF5" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <defs>
+        <filter id="pencil" x="-5%" y="-5%" width="110%" height="110%">
+          <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4" result="n" />
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="1.7" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
+    <a class="skip" href="#content">Skip to content</a>
+
+    <svg class="waves" viewBox="0 0 1200 110" preserveAspectRatio="none" aria-hidden="true" set:html={waves(11)} />
+
+    <div class="gutter">
+      <div class="wrap">
+        <MarginVine client:load />
+        <Header />
+        <main id="content">
+          <slot />
+        </main>
+        <Footer />
+      </div>
+    </div>
+
+    <svg class="waves flip" viewBox="0 0 1200 110" preserveAspectRatio="none" aria-hidden="true" set:html={waves(42)} />
+    <Sprouts client:idle />
+  </body>
+</html>
+
+<style>
+  .waves { display: block; width: 100%; height: 96px; }
+  .waves.flip { transform: scaleY(-1); }
+  .gutter {
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap {
+    position: relative;
+    max-width: var(--page-max);
+    margin: 0 auto;
+    padding-left: calc(var(--mw) + 30px);
+  }
+  .wrap::before {
+    content: ""; position: absolute; top: -96px; bottom: -96px;
+    left: calc(var(--mw) + 8px); width: 2px;
+    background: var(--margin-line); opacity: .75;
+  }
+  main { display: block; padding-block: 8px 40px; min-height: 50vh; }
+  .skip {
+    position: absolute; left: 12px; top: -60px; z-index: 20;
+    background: var(--card); padding: 8px 14px; border: 2px solid var(--ink); border-radius: 10px;
+  }
+  .skip:focus { top: 12px; }
+  @media (max-width: 640px) {
+    .wrap { padding-left: calc(var(--mw) + 20px); }
+    .waves { height: 70px; }
+  }
+</style>

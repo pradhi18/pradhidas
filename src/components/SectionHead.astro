@@ -1,0 +1,26 @@
+---
+import { divider, type DividerKind } from '../lib/doodles';
+
+interface Props {
+  title: string;
+  id?: string;
+  divider?: DividerKind;
+  level?: 1 | 2;
+}
+const { title, id, divider: kind = 'coil', level = 2 } = Astro.props;
+const Tag = level === 1 ? 'h1' : 'h2';
+---
+
+<div class="sec-head">
+  <div>
+    <Tag class="section-title" id={id}>{title}</Tag>
+    <svg class="divider pencil" viewBox="0 0 190 26" aria-hidden="true" set:html={divider(kind)} />
+  </div>
+  <div class="aside"><slot /></div>
+</div>
+
+<style>
+  .sec-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 28px; margin-bottom: 34px; }
+  .divider { display: block; width: 190px; height: 26px; margin-top: 8px; overflow: visible; }
+  .aside:empty { display: none; }
+</style>

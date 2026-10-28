@@ -21,12 +21,12 @@ const psstFlower = flower('lotus', 17, 0);
       <p class="hi">hi, i'm</p>
       <h1>
         <span class="first">
-          <svg class="name-bubble pencil" viewBox="0 0 380 160" aria-hidden="true" set:html={crowd(380, 160, 20, 1, 14)} />
+          <svg class="name-bubble pencil" viewBox="0 0 240 140" aria-hidden="true" set:html={crowd(240, 140, 10, 1, 14)} />
           Pradhi
+          <svg class="name-stars pencil" viewBox="0 0 160 120" aria-hidden="true" set:html={stars()} />
         </span>
         <span class="last">
           Das
-          <svg class="name-stars pencil" viewBox="0 0 160 120" aria-hidden="true" set:html={stars()} />
         </span>
       </h1>
       <p class="lede">I'm a software engineer who builds web apps end to end and draws flowers in the margins. This is my notebook: blog posts, projects, and whatever I'm into right now.</p>
@@ -85,9 +85,10 @@ const psstFlower = flower('lotus', 17, 0);
   h1 > span { display: block; width: fit-content; position: relative; isolation: isolate; }
   .first { color: var(--tangerine); text-shadow: .045em .05em 0 var(--lilac); }
   .last { color: var(--ink); text-shadow: .045em .05em 0 var(--peach); margin-left: .35em; }
-  /* the flower bubble is sized from the word itself, so it sits in the same spot at every screen size */
-  .name-bubble { position: absolute; left: -12%; top: -24%; width: 90%; height: auto; z-index: -1; overflow: visible; }
-  .name-stars { position: absolute; left: 104%; top: -6%; width: .95em; height: auto; overflow: visible; }
+  /* a small bubble of tiny flowers peeking out from behind the top-left of the name */
+  .name-bubble { position: absolute; left: -9%; top: -28%; width: 50%; height: auto; z-index: -1; overflow: visible; }
+  /* sparkles off the end of the name */
+  .name-stars { position: absolute; left: 97%; top: -26%; width: .72em; height: auto; overflow: visible; }
   .lede { font-size: clamp(18px, 2vw, 21px); max-width: 36ch; margin: 26px 0 26px; }
   .ctas { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
   .psst { font-family: var(--f-hand); font-size: 20px; color: var(--pencil); margin: 28px 0 0; transform: rotate(-1.5deg); }

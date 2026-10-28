@@ -245,7 +245,7 @@ export function stars(s = 31): string {
       const rr = k % 2 ? r * 0.45 : r;
       pts.push([x + Math.cos(o + (k * Math.PI) / 5) * rr + j(0.8), y + Math.sin(o + (k * Math.PI) / 5) * rr + j(0.8)]);
     }
-    out += `<path class="${i % 2 ? 'ink' : 'pet p0'}" d="${line(pts)}Z"/>`;
+    out += `<path class="${i % 2 ? 'ink' : 'pet p0 solid'}" d="${line(pts)}Z"/>`;
   });
   return out;
 }

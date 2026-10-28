@@ -1,4 +1,4 @@
-# build output
+﻿# build output
 dist/
 # generated types
 .astro/
@@ -28,5 +28,5 @@ pnpm-debug.log*
 .vscode/
 
 # never commit raw reference photos (they can contain work notes)
-data/
-photo references/
+/data/
+/photo references/

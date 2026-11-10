@@ -14,6 +14,8 @@ export default function StickerTray() {
   const [bindW, setBindW] = useState(0);
   const board = useRef<HTMLDivElement>(null);
   const drag = useRef<{ key: number; dx: number; dy: number } | null>(null);
+  const tapStart = useRef<{ x: number; y: number } | null>(null);
+  const lastStick = useRef(0);
 
   useEffect(() => {
     try { const saved = JSON.parse(localStorage.getItem(STORE) ?? '[]'); if (Array.isArray(saved)) setPlaced(saved); } catch { /* ignore */ }
@@ -30,19 +32,35 @@ export default function StickerTray() {
 
   const bindingSvg = useMemo(() => (bindW ? binding(bindW) : ''), [bindW]);
 
-  function point(e: React.PointerEvent) {
+  function point(e: { clientX: number; clientY: number }) {
     const r = board.current!.getBoundingClientRect();
     return { x: (e.clientX - r.left) / r.width, y: e.clientY - r.top };
   }
 
   function stick(x: number, y: number) {
+    lastStick.current = Date.now();
     setPlaced((p) => [...p.slice(-39), {
       key: Date.now() + Math.random(), id: selected, x, y: Math.max(52, Math.min(BOARD_H - 24, y)),
       rot: Math.round((Math.random() - 0.5) * 40), scale: 0.9 + Math.random() * 0.3,
     }]);
   }
 
+  // A tap sticks a flower when the finger lifts, so swiping past the board still scrolls the page.
   function onBoardDown(e: React.PointerEvent) {
+    if ((e.target as Element).closest('.placed')) return;
+    tapStart.current = { x: e.clientX, y: e.clientY };
+  }
+  function onBoardUp(e: React.PointerEvent) {
+    const s = tapStart.current;
+    tapStart.current = null;
+    if (!s || (e.target as Element).closest('.placed')) return;
+    if (Math.hypot(e.clientX - s.x, e.clientY - s.y) > 12) return; // moved too far: a swipe, not a tap
+    const { x, y } = point(e);
+    stick(x, y);
+  }
+  // Backup for browsers that skip pointer events: a plain click does the same job once.
+  function onBoardClick(e: React.MouseEvent) {
+    if (Date.now() - lastStick.current < 700) return;
     if ((e.target as Element).closest('.placed')) return;
     const { x, y } = point(e);
     stick(x, y);
@@ -79,7 +97,15 @@ export default function StickerTray() {
         ))}
       </div>
 
-      <div className="sticker-board" ref={board} onPointerDown={onBoardDown} style={{ height: BOARD_H }}>
+      <div
+        className="sticker-board"
+        ref={board}
+        onPointerDown={onBoardDown}
+        onPointerUp={onBoardUp}
+        onPointerCancel={() => { tapStart.current = null; }}
+        onClick={onBoardClick}
+        style={{ height: BOARD_H }}
+      >
         <svg className="board-binding pencil" viewBox={`0 0 ${bindW || 600} 38`} aria-hidden="true" dangerouslySetInnerHTML={{ __html: bindingSvg }} />
         {placed.length === 0 && <p className="board-hint hand">pick a flower above, then tap anywhere here to stick it</p>}
         {placed.map((s) => (

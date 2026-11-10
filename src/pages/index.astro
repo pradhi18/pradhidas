@@ -111,11 +111,11 @@ const psstFlower = flower('lotus', 17, 0);
 
   /* sticker tray (React island markup) */
   :global(.tray) { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
-  :global(.tray-item) { width: 64px; height: 64px; padding: 4px; border: 1.6px solid var(--pencil); border-radius: var(--sketch); background: var(--card); cursor: pointer; transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), background .2s; }
+  :global(.tray-item) { touch-action: manipulation; width: 64px; height: 64px; padding: 4px; border: 1.6px solid var(--pencil); border-radius: var(--sketch); background: var(--card); cursor: pointer; transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), background .2s; }
   :global(.tray-item svg) { width: 100%; height: 100%; overflow: visible; }
   :global(.tray-item:hover) { transform: rotate(-8deg) scale(1.06); }
   :global(.tray-item[aria-pressed='true']) { background: var(--lilac); border-color: var(--ink); transform: rotate(-4deg) scale(1.08); }
-  :global(.sticker-board) { position: relative; overflow: hidden; background: var(--card); border: 1.8px solid var(--pencil); border-radius: 18px 6px 22px 8px / 8px 22px 6px 18px; cursor: copy; touch-action: none; }
+  :global(.sticker-board) { position: relative; overflow: hidden; background: var(--card); border: 1.8px solid var(--pencil); border-radius: 18px 6px 22px 8px / 8px 22px 6px 18px; cursor: copy; touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
   :global(.board-binding) { display: block; width: 100%; height: 38px; }
   :global(.board-hint) { position: absolute; left: 0; right: 0; top: 46%; text-align: center; font-size: 22px; color: var(--pencil); margin: 0; pointer-events: none; padding-inline: 16px; }
   :global(.placed) { position: absolute; width: 72px; height: 72px; overflow: visible; cursor: grab; touch-action: none; }
